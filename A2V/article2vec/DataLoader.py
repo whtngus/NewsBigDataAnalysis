@@ -6,12 +6,19 @@ import csv
 from konlpy.tag import Twitter
 
 class DataLoader:
-    def __init__(self,label_count,input_size):
+    def __init__(self,label_count,input_size,train_late):
+        '''
+
+        :param label_count: 정답 분류 갯수
+        :param input_size: 본문, 제목 에서 뽑을 단어 수
+        :param train_late: 트레이닝 테스트 나눌 비율
+        '''
         # self.fast_text = self.load_fest_text()  # 데이터가 커서 임시 주석
         self.label_count = label_count
         self.input_size = input_size
         self.dimension = 300
         self.spliter = Twitter()
+        self.train_late = train_late
 
     def load_fest_text(self):
         fast_text = {}
@@ -62,7 +69,14 @@ class DataLoader:
         except FileNotFoundError as e:
             print("해당 파일이 존재하지 않습니다.")
             sys.exit(1)
-        return self.input_embedding(data_list),self.label_embedding(label_list)
+        rate = int(len(data_list) *self.train_late)
+        input = self.input_embedding(data_list)
+        label = self.label_embedding(label_list)
+        train_input = input[:rate]
+        train_label = label[:rate]
+        test_input = input[rate:]
+        test_label = label[rate:]
+        return train_input, train_label, test_input, test_label
 
     def input_embedding(self,data_list):
         for data_index, data in enumerate(data_list):
@@ -90,7 +104,8 @@ class DataLoader:
 
 if __name__ == "__main__":
     label_count = 3
+    train_late = 0.8
     input_size = [20,5]
     dataPath = "../data/test2.csv"
-    dataLoader = DataLoader(label_count,input_size)
-    train_data, test_data = dataLoader.data_loader(dataPath)
+    dataLoader = DataLoader(label_count,input_size,train_late)
+    train_input, train_label, test_input, test_label = dataLoader.data_loader(dataPath)
