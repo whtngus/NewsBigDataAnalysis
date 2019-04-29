@@ -1,42 +1,36 @@
-from article2vec.DataLoader import DataLoader
+from DataLoader import DataLoader
 from keras.models import load_model
-from article2vec import GRUModel
+from  CNNModel import CNNModel
 import numpy as np
 
 class ClassificationTrain:
 
-    def __init__(self, trainPath,modelPath):
-        '''
-
-        :param trainPath : 대상파일 경로
-        :param modelPath 모댈저장 경로
-        '''
+    def __init__(self, trainPath,modelPath,label_count,input_size,train_rate):
         self.trainPath = trainPath
         self.modelPath = modelPath
-        self.data_loader = DataLoader()
+        self.data_loader = DataLoader(label_count,input_size,train_rate)
 
-    def train(self):
+    def train(self,epochs,batch_size,lr):
         '''
-        train
+
+        :param epochs: epochs
+        :param batch_size: batch Size
+        :param lr : learningRate
         :return:
         '''
-        sign_onehot = "sign_onehot"
-        input_size = 20
-        step_size = 5
-        batch_size= 2000
-        data_list, label_list = self.data_loader.train_data_loader(self.trainPath,sign_onehot)
-        train_data,label_data,sig_size,_ = self.data_loader.data_embedding(data_list,label_list,sign_onehot,input_size,step_size)
-
-        model_gru = GRUModel.GRUModel()
-        model_gru.train_model(sig_size,input_size)
-        model = model_gru.model
-        train_history = model.fit(train_data, label_data, epochs=20, batch_size=batch_size,verbose=2)
-        train_history = train_history.history
+        train_input, train_label, test_input, test_label = dataLoader.data_loader(dataPath)
+        label_count = len(train_label[0])
+        model_cnn = CNNModel.CNNModel()
+        model_cnn.train_model(label_count, lr)
+        model = model_cnn.model
+        train_history = model.fit(train_input, train_label, epochs=epochs, batch_size=batch_size,verbose=2
+                                  ,validation_data=(test_input,test_label))
+        train_history_detail = train_history.history
         model.save(self.modelPath)
 
     def test(self):
         '''
-            test ㅠㅠ
+
         :return:
         '''
         sign_onehot = "sign_onehot"
@@ -88,8 +82,16 @@ class ClassificationTrain:
 if __name__ == "__main__":
     mode = "train"
     if mode == "test":
-        train = ClassificationTrain("../data/newsData.csv", "model5")
+        train = ClassificationTrain("../data/newsData.csv", "model")
         train.test()
-    else:
-        train = ClassificationTrain("train", "model2")
+    elif mode == "train":
+        trainPath = "../data/test2.csv"
+        modelPath = "model"
+        label_count = 3
+        train_rate = 0.8
+        input_size = [20, 5]
+        train = ClassificationTrain(trainPath,modelPath,label_count,input_size,train_rate)
+        epoch = 1000
+        batch_size = 100
+        ir = 0.01
         train.train()
