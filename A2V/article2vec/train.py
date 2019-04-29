@@ -93,5 +93,5 @@ if __name__ == "__main__":
         train = ClassificationTrain(trainPath,modelPath,label_count,input_size,train_rate)
         epoch = 1000
         batch_size = 100
-        ir = 0.01
-        train.train()
+        lr = 0.01
+        train.train(epoch,batch_size,lr)
