@@ -7,7 +7,7 @@ from konlpy.tag import Twitter
 
 class DataLoader:
     def __init__(self,label_count,input_size):
-        # self.fast_text = self.load_fest_text()
+        # self.fast_text = self.load_fest_text()  # 데이터가 커서 임시 주석
         self.label_count = label_count
         self.input_size = input_size
         self.dimension = 300
@@ -74,7 +74,7 @@ class DataLoader:
         input_shape = [[0] * self.dimension] * size
         word_index = 0
         for word in self.spliter.pos(sentence):
-            if word[0] in self.fast_text:
+            if word[1] in ['Noun','Verb'] and word[0] in self.fast_text:
                 input_shape[word_index] = self.fast_text[word[0]][:]
                 word_index += 1
         return input_shape
@@ -89,8 +89,8 @@ class DataLoader:
 
 
 if __name__ == "__main__":
-    label_count = 16
+    label_count = 3
     input_size = [20,5]
-    dataPath = "../data/all_text.csv"
+    dataPath = "../data/test2.csv"
     dataLoader = DataLoader(label_count,input_size)
     train_data, test_data = dataLoader.data_loader(dataPath)
