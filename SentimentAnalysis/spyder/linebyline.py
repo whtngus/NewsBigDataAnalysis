@@ -45,6 +45,9 @@ def tokenize(doc):
 train_docs = [(tokenize(row[1]), row[2]) for row in train_data[1:100]]
 test_docs = [(tokenize(row[1]), row[2]) for row in test_data[1:100]]
         
+
+
+train_data[1][1]
 pprint(train_docs[0])
 
 tokens = [t for d in train_docs for t in d[0]]
@@ -78,7 +81,6 @@ rc('font', family=font_name)
 plt.figure(figsize=(20,10))
 text.plot(50)
 
-rc('font', family=font_name)
 
 
 COMMON_NUM = 100
@@ -86,6 +88,7 @@ COMMON_NUM = 100
 
 # 시간이 꽤 걸립니다! 시간을 절약하고 싶으면 most_common의 매개변수를 줄여보세요.
 selected_words = [f[0] for f in text.vocab().most_common(COMMON_NUM)]
+
 
 def term_frequency(doc):
     return [doc.count(word) for word in selected_words]
@@ -136,4 +139,47 @@ predict_pos_neg("배경 음악이 영화의 분위기랑 너무 안 맞았습니
 predict_pos_neg("주연 배우가 신인인데 연기를 진짜 잘 하네요. 몰입감 ㅎㄷㄷ")
 predict_pos_neg("믿고 보는 감독이지만 이번에는 아니네요")
 predict_pos_neg("주연배우 때문에 봤어요")
+
+
+
+review = "주연배우 때문에 봤어요"
+
+
+
+#####################################3
+
+
+
+
+
+
+
+
+token = ['/'.join(t) for t in okt.pos(review, norm=True, stem=True)]
+
+
+tokens = [t for d in train_docs for t in d[0]]
+text = nltk.Text(tokens, name='NMSC')
+selected_words = []
+for i in range(len(text.vocab().most_common(100))):
+    selected_words.append(text.vocab().most_common(100)[i][0])
+
+tf = [token.count(word) for word in selected_words]
+
+data = np.expand_dims(np.asarray(tf).astype('float32'), axis=0)
+score = float(model.predict(data))
+if(score > 0.5):
+    print("[{}]는 {:.2f}% 확률로 긍정 리뷰이지 않을까 추측해봅니다.^^\n".format(review, score * 100))
+else:
+    print("[{}]는 {:.2f}% 확률로 부정 리뷰이지 않을까 추측해봅니다.^^;\n".format(review, (1 - score) * 100))
+
+
+
+
+
+
+
+
+
+
 

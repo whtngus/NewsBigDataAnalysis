@@ -6,13 +6,10 @@
 @ since: Tue Apr 30 19:46:23 2019
 """
 
-import os
-os.chdir('C:/Users/sunbl/Desktop/edata/experiences/8.news/NewsBigDataAnalysis/SentimentAnalysis')
-
-from Preprocessing import tokenize
-from Preprocessing import term_frequency
-from keras import models, layers, optimizers, losses, metrics
 import numpy as np
+from konlpy.tag import Okt # recommend you to install latest version
+import nltk
+from keras import models, layers, optimizers, losses, metrics
 
 class Model:
     def __init__(self):
@@ -36,14 +33,27 @@ class Model:
     
     def my_eval(self,model,y_train,y_test):
         return model.evaluate(y_train, y_test)
+    
+    def tokenize(self,data):
+        okt = Okt()
+        # norm은 정규화, stem은 근어로 표시하기를 나타냄
+        return ['/'.join(t) for t in okt.pos(data, norm=True, stem=True)]
 
-    def predict_pos_neg(self,model,review):
-        token = tokenize(review)
-        tf = term_frequency(token)
+    def predict_pos_neg(self,model,review,doc):
+        okt = Okt()
+        token = ['/'.join(t) for t in okt.pos(review, norm=True, stem=True)]
+
+        tokens = [t for d in doc for t in d[0]]
+        text = nltk.Text(tokens, name='NMSC')
+
+        selected_words = []
+        for i in range(len(text.vocab().most_common(100))):
+            selected_words.append(text.vocab().most_common(100)[i][0])
+
+        tf = [token.count(word) for word in selected_words]
         data = np.expand_dims(np.asarray(tf).astype('float32'), axis=0)
         score = float(model.predict(data))
         if(score > 0.5):
             print("[{}]는 {:.2f}% 확률로 긍정 리뷰이지 않을까 추측해봅니다.^^\n".format(review, score * 100))
         else:
             print("[{}]는 {:.2f}% 확률로 부정 리뷰이지 않을까 추측해봅니다.^^;\n".format(review, (1 - score) * 100))
-
