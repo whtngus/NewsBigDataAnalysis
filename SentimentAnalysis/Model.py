@@ -6,34 +6,44 @@
 @ since: Tue Apr 30 19:46:23 2019
 """
 
+import os
+os.chdir('C:/Users/sunbl/Desktop/edata/experiences/8.news/NewsBigDataAnalysis/SentimentAnalysis')
+
+from Preprocessing import tokenize
+from Preprocessing import term_frequency
 from keras import models, layers, optimizers, losses, metrics
+import numpy as np
 
-model = models.Sequential()
-model.add(layers.Dense(64, activation='relu', input_shape=(COMMON_NUM,)))
-model.add(layers.Dense(64, activation='relu'))
-model.add(layers.Dense(1, activation='sigmoid'))
+class Model:
+    def __init__(self):
+        '''
+        @const COMMON_NUM: number of vocabs to care
+        '''
+        self.COMMON_NUM = 100
 
-model.compile(optimizer=optimizers.RMSprop(lr=0.001),
-             loss=losses.binary_crossentropy,
-             metrics=[metrics.binary_accuracy])
+    def my_generate(self):
+        model = models.Sequential()
+        model.add(layers.Dense(64, activation='relu', input_shape=(self.COMMON_NUM,)))
+        model.add(layers.Dense(64, activation='relu'))
+        model.add(layers.Dense(1, activation='sigmoid'))
+        model.compile(optimizer=optimizers.RMSprop(lr=0.001), loss=losses.binary_crossentropy,
+                      metrics=[metrics.binary_accuracy])
+        return model
 
-model.fit(x_train, y_train, epochs=10, batch_size=512)
-results = model.evaluate(x_test, y_test)
+    def my_train(self,model,x_train,x_test):
+        model.fit(x_train, x_test, epochs=10, batch_size=512)
+        return model
+    
+    def my_eval(self,model,y_train,y_test):
+        return model.evaluate(y_train, y_test)
 
-
-def predict_pos_neg(review):
-    token = tokenize(review)
-    tf = term_frequency(token)
-    data = np.expand_dims(np.asarray(tf).astype('float32'), axis=0)
-    score = float(model.predict(data))
-    if(score > 0.5):
-        print("[{}]는 {:.2f}% 확률로 긍정 리뷰이지 않을까 추측해봅니다.^^\n".format(review, score * 100))
-    else:
-        print("[{}]는 {:.2f}% 확률로 부정 리뷰이지 않을까 추측해봅니다.^^;\n".format(review, (1 - score) * 100))
-        
-predict_pos_neg("올해 최고의 영화! 세 번 넘게 봐도 질리지가 않네요.")
-predict_pos_neg("배경 음악이 영화의 분위기랑 너무 안 맞았습니다. 몰입에 방해가 됩니다.")
-predict_pos_neg("주연 배우가 신인인데 연기를 진짜 잘 하네요. 몰입감 ㅎㄷㄷ")
-predict_pos_neg("믿고 보는 감독이지만 이번에는 아니네요")
-predict_pos_neg("주연배우 때문에 봤어요")
+    def predict_pos_neg(self,model,review):
+        token = tokenize(review)
+        tf = term_frequency(token)
+        data = np.expand_dims(np.asarray(tf).astype('float32'), axis=0)
+        score = float(model.predict(data))
+        if(score > 0.5):
+            print("[{}]는 {:.2f}% 확률로 긍정 리뷰이지 않을까 추측해봅니다.^^\n".format(review, score * 100))
+        else:
+            print("[{}]는 {:.2f}% 확률로 부정 리뷰이지 않을까 추측해봅니다.^^;\n".format(review, (1 - score) * 100))
 

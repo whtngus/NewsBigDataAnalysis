@@ -15,9 +15,6 @@ Created on Tue Apr 30 20:17:37 2019
 
 import os
 
-from .Preprocessing import Preprocessing
-
-
 # function to read data
 def read_data(filename):
     os.chdir('C:/users/sunbl/desktop/')
@@ -39,16 +36,14 @@ from konlpy.tag import Okt
 okt = Okt()
 print(okt.pos(u'이 밤 그날의 반딧불을 당신의 창 가까이 보낼게요'))
 
-import json
-import os
 from pprint import pprint
 
 def tokenize(doc):
     # norm은 정규화, stem은 근어로 표시하기를 나타냄
     return ['/'.join(t) for t in okt.pos(doc, norm=True, stem=True)]
 
-train_docs = [(tokenize(row[1]), row[2]) for row in train_data]
-test_docs = [(tokenize(row[1]), row[2]) for row in test_data[1:10]]
+train_docs = [(tokenize(row[1]), row[2]) for row in train_data[1:100]]
+test_docs = [(tokenize(row[1]), row[2]) for row in test_data[1:100]]
         
 pprint(train_docs[0])
 
@@ -114,7 +109,7 @@ y_test = np.asarray(test_y).astype('float32')
 from keras import models, layers, optimizers, losses, metrics
 
 model = models.Sequential()
-model.add(layers.Dense(64, activation='relu', input_shape=(COMMON_NUM,)))
+model.add(layers.Dense(64, activation='relu', input_shape=(100,)))
 model.add(layers.Dense(64, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))
 

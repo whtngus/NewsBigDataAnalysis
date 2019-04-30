@@ -28,8 +28,8 @@ class Preprocessing:
     def tokenize2(self,data):
         doc = [(self.tokenize(row[1]), row[2]) for row in data]
         tok = [t for d in doc for t in d[0]]
-        text = nltk.Text(tok, name='NMSC')
-        return text # this is the tokens (ex. '그리다/Verb')
+        text = nltk.Text(tok, name='NMSC') # these are the tokens (ex. '그리다/Verb')
+        return doc, text;
 
     def print_info(self,text,n):
         print("Number of tokens: ", len(text.tokens)) # Total number of tokens
@@ -65,13 +65,3 @@ class EDA:
         rc('font', family=font_name)
         plt.figure(figsize=(20,10))
         self.text.plot(n)
-
-###usage
-#test_data = read_data('ratings_test.txt')
-#x = Preprocessing()
-#z = x.tokenize2(test_data[0:10])
-#x.printInfo(z,3)
-#x.show_freq(10)
-#x = EDA(z)
-
-
