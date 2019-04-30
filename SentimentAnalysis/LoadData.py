@@ -23,10 +23,9 @@ class LoadData:
             data = data[1:] # remove header
         return data
 
-# usage
-tmp = LoadData('C:/users/sunbl/desktop/')
-tmp = tmp.read_data('ratings_train.txt')
-
-#print out
-print(len(tmp))
-print(len(tmp[0])
+## usage
+#tmp = LoadData('C:/users/sunbl/desktop/')
+#tmp = tmp.read_data('ratings_train.txt')
+##print out
+#print(len(tmp))
+#print(len(tmp[0])
