@@ -17,14 +17,13 @@ import numpy as np
 class Preprocessing:
     def __init__(self):
         '''
-        @const COMMON_NUM: number of vocabs
+        @const COMMON_NUM: number of vocabs. you can change it but SHOULD BE IDENTICAL to the one in the Model.py
         '''
         self.COMMON_NUM = 100
 
     def tokenize(self,data):
         okt = Okt()
-        # norm은 정규화, stem은 근어로 표시하기를 나타냄
-        return ['/'.join(t) for t in okt.pos(data, norm=True, stem=True)]
+        return ['/'.join(t) for t in okt.pos(data, norm=True, stem=True)] # norm은 정규화, stem은 근어(stemming)
 
     def tokenize2(self,data):
         doc = [(self.tokenize(row[1]), row[2]) for row in data]
@@ -60,6 +59,9 @@ class EDA:
         self.text = text
 
     def show_freq(self,n):
+        '''Function to see the frequency of the words.
+        @param n: number of words
+        '''
         #%matplotlib inline
         font_fname='c:/windows/fonts/malgun.ttf'
         font_name = font_manager.FontProperties(fname=font_fname).get_name()

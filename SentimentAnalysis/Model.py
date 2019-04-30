@@ -14,13 +14,16 @@ from keras import models, layers, optimizers, losses, metrics
 class Model:
     def __init__(self):
         '''
-        @const COMMON_NUM: number of vocabs to care
+        @const COMMON_NUM: number of vocabs to care. if it is large, it takes long time to train
         '''
         self.COMMON_NUM = 100
 
     def my_generate(self):
+        '''Function to build up the model architecture
+        you can change the number of layers or any regarding parameters of the architecturem
+        '''
         model = models.Sequential()
-        model.add(layers.Dense(64, activation='relu', input_shape=(self.COMMON_NUM,)))
+        model.add(layers.Dense(64, activation='relu', input_shape=(self.COMMON_NUM,))) 
         model.add(layers.Dense(64, activation='relu'))
         model.add(layers.Dense(1, activation='sigmoid'))
         model.compile(optimizer=optimizers.RMSprop(lr=0.001), loss=losses.binary_crossentropy,
@@ -28,20 +31,21 @@ class Model:
         return model
 
     def my_train(self,model,x_train,x_test):
+        '''Function to train the model
+        '''
         model.fit(x_train, x_test, epochs=10, batch_size=512)
         return model
     
     def my_eval(self,model,y_train,y_test):
+        '''Function to evaluate the model
+        '''
         return model.evaluate(y_train, y_test)
-    
-    def tokenize(self,data):
-        okt = Okt()
-        # norm은 정규화, stem은 근어로 표시하기를 나타냄
-        return ['/'.join(t) for t in okt.pos(data, norm=True, stem=True)]
 
     def predict_pos_neg(self,model,review,doc):
+        '''Function to predict whether the review is positive / negative
+        '''
         okt = Okt()
-        token = ['/'.join(t) for t in okt.pos(review, norm=True, stem=True)]
+        token = ['/'.join(t) for t in okt.pos(review, norm=True, stem=True)] # tag is added with the word
 
         tokens = [t for d in doc for t in d[0]]
         text = nltk.Text(tokens, name='NMSC')

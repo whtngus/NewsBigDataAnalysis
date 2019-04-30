@@ -15,8 +15,9 @@ class LoadData:
         '''
         self.address = address
 
-    # function to read data
     def read_data(self,filename):
+        '''Function to load data
+        '''
         os.chdir(self.address)
         with open(filename, 'r', encoding='UTF8') as f: # set UTF8 since it's Korean
             data = [line.split('\t') for line in f.read().splitlines()]
