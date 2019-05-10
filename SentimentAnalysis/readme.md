@@ -1,6 +1,6 @@
 ## Sentiment Analysis for a given Keyword
 
-This is a code for sentiment analysis.
+This is a code for the sentiment analysis.
 
 You can run the code with either `main.py` or `linebyline.py` in the spyder folder.
 
