@@ -20,7 +20,7 @@ class Model:
 
     def my_generate(self):
         '''Function to build up the model architecture
-        you can change the number of layers or any regarding parameters of the architecturem
+        you can change the number of layers or any regarding parameters of the architecture
         '''
         model = models.Sequential()
         model.add(layers.Dense(64, activation='relu', input_shape=(self.COMMON_NUM,))) 
