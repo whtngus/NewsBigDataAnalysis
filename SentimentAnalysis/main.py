@@ -40,8 +40,5 @@ if __name__ == "__main__":
     result = mdl.my_eval(model, y_train, y_test)
     
     # test with samples. you can go with your own one
-    mdl.predict_pos_neg(model,"올해 최고의 영화! 세 번 넘게 봐도 질리지가 않네요.",doc1)
-    mdl.predict_pos_neg(model,"배경 음악이 영화의 분위기랑 너무 안 맞았습니다. 몰입에 방해가 됩니다.",doc1)
-    mdl.predict_pos_neg(model,"주연 배우가 신인인데 연기를 진짜 잘 하네요. 몰입감 ㅎㄷㄷ",doc1)
-    mdl.predict_pos_neg(model,"믿고 보는 감독이지만 이번에는 아니네요",doc1)
-    mdl.predict_pos_neg(model,"주연배우 때문에 봤어요",doc1)
+    mdl.predict_pos_neg(model,"승리는 이제 끝났네요.",doc1)
+    mdl.predict_pos_neg(model,"유천 오빠 끝까지 함께해요",doc1)
