@@ -1,0 +1,364 @@
+<!-- https://canvasjs.com/javascript-charts/multi-series-chart/ -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+<script>
+var newsDate = [
+		'2019-04-03',
+		'2019-04-04',
+		'2019-04-05',
+		'2019-04-06',
+		'2019-04-07',
+		'2019-04-08',
+		'2019-04-09',
+		'2019-04-10',
+		'2019-04-11',
+		'2019-04-12',
+		'2019-04-13',
+		'2019-04-14',
+		'2019-04-15',
+		'2019-04-16',
+		'2019-04-17'
+	];
+	
+	// 키워드 - 호감도 
+	var keyword_favority = [53,0,0,0,0,0,-40,23,17,20,14,10,7,3,5];
+	
+	// [뉴스1] - 확산지수
+	var news_ex1_spread_num = [23,30,15,21,8,15,40,56,49,29,18,20,19,11,7];
+	// [뉴스1] - 감성지수
+	var news_ex1_emotion_num = [13,0,0,0,0,0,22,36,59,38,40,21,18,17,10];
+	// [뉴스1] - 변화지수
+	var news_ex1_change_num = [10,-13,0,0,0,0,22,14,23,-21,2,-19,-3,-1,-7];
+	
+	// [뉴스2] - 확산지수
+	var news_ex2_spread_num = [23,30,15,21,8,15,40,56,49,29,18,20,19,11,7];
+	// [뉴스2] - 감성지수
+	var news_ex2_emotion_num = [13,0,0,0,0,0,22,36,59,38,40,21,18,17,10];
+	// [뉴스2] - 변화지수
+	var news_ex2_change_num = [10,-13,0,0,0,0,22,14,23,-21,2,-19,-3,-1,-7];
+	
+	// [뉴스3] - 확산지수
+	var news_ex3_spread_num = [23,30,15,21,8,15,40,56,49,29,18,20,19,11,7];
+	// [뉴스3] - 감성지수
+	var news_ex3_emotion_num = [13,0,0,0,0,0,22,36,59,38,40,21,18,17,10];
+	// [뉴스3] - 변화지수
+	var news_ex3_change_num = [10,-13,0,0,0,0,22,14,23,-21,2,-19,-3,-1,-7];
+	
+	
+	var newsTitle_ex1 = [
+		'황하나 의혹, \‘박유천\’ 소환했다? 불편한 연인 꼬리표 못 뗄까',
+		'황하나 체포에 전 연인 박유천은 무슨 죄?',
+		'\‘박유천 전 여자친구\’ 황하나, 마약 투약 혐의 체포→유치장 이송…\‘혐의 일부 인정\’',
+		'[속보] 박유천 전 여친 \‘황하나\’, 마약 투약 혐의로 구속',
+		'\'승리·정준영 게이트\' 이어 \'황하나 게이트\' 열리나?[SS이슈]',
+		'황하나에 마약 투약 권유한, 연예인 누구?',
+		'황하나 전 연인 박유천이 황하나와 헤어지자마자 바로 한 일',
+		'[전문] 한숨 쉰 박유천···\"제 인생 걸린 일, 결코 마약 안 했다\"',
+		'황하나 vs 박유천, 누가 거짓말하나?',
+		'[단독] 진실게임 끝났나…"황하나·박유천 함께 마약 투약\"',
+		'\"황하나·박유천 함께 마약\"…증거 상당량 확보',
+		'\“이미 결별\” 박유천, 황하나 아파트에 드나든 CCTV',
+		'경찰 \'박유천 수사\' 본격화…소속사, 변호사 선임',
+		'박유천 자택 압수수색 현장…주민들 \"한번도 모습 못봤다\"',
+		'[단독] 경찰 \"박유천 마약 거래…핵심 장면 CCTV 찍혔다\"'];
+
+	var newsTitle_ex2 = [
+		'\'남양유업 외손녀 前연인\' 박유천, 2017년까지 교제…마약 정황 인지? \"나도 실수한다\"',
+		'황하나 박유천, 여전히 뜨거운 관심',
+		'\‘SNS 스타\’ 대기업 외손녀 마약범죄 연루로 몰락',
+		'JYJ 박유천 팔뚝서 지워진 황하나 얼굴 문신 \"문신 지우는데 오래 걸렸다\"',
+		'황하나 구속, 그녀는 누구? \'필로폰 등 마약 투약 혐의\' 남양유업 창업주 외손녀',
+		'\“문신도 지웠는데\”…박유천, 황하나 마약 파문에 또 재조명',
+		'박유천·황하나 파혼 사유 \'강아지 폭행설\' 대두 \"싸이코가 술 취해 죽인다고…\"',
+		'박유천 측 \“오늘 6시 긴급 기자회견, \‘황하나 A씨\’ 관련 입장발표” [공식입장]',
+		'[종합]황하나, 내일(12일) 검찰 송치…박유천 진술청취 시점은 조율중',
+		'[취재후] 박유천을 박유천이라 부르지 못하는 경찰',
+		'\“박유천, 황하나와 함께 마약\” 경찰 수사기록에 적시',
+		'마약혐의 황하나 검찰 수사 본격화…출국금지 박유천 곧 소환',
+		'\"결코 마약 안했다\" 박유천, 경찰 출석 예정→변호인 전면 담당[종합]',
+		'박유천 마약 간이검사 \'음성\'…경찰, 모발 국과수에 감정의뢰\',
+		'\'마약 혐의\' 박유천, 9시간 경찰 조사 종료…\'묵묵부답\'(종합)'];
+
+	var newsTitle_ex3 = [
+		'박유천 前애인 황하나, 마약투약 의혹 영상보니',
+		'황하나 결별 후 박유천 최근 근황? 팔 문신 지웠나 결혼 연기 파혼까지...결별 이유는?',
+		'황하나, 체포 전 왜 병원에? 폐쇄병동 입원…심신미약? 수액맞고 마약 지우기?',
+		'황하나 구속영장 신청, 박유천·버닝썬과 연결고리… 그녀는 누구?',
+		'황하나 \"연예인 권유로 마약\"…연예계 수사로 번지나',
+		'[이슈 VIEW] 박유천에게 \'주홍글씨\'가 돼버린 황하나',
+		'박유천, 여전히 훈훈한 비주얼...최신근황 들여다보니',
+		'박유천 \"재기 물거품될 마약 결코 안해…성실히 조사받겠다\"(종합)',
+		'\'눈물의 기자회견\'했지만…박유천 \'소환\' 조율 중',
+		'\'8뉴스\' 경찰 \"박유천 출국금지\"…황하나 불법영상 유포 의혹 수사[종합]',
+		'\'마약\' 황하나 검찰 수사 본격화...박유천 출국금지',
+		'\'마약 혐의\' 배우 양모씨 \"식욕억제제 먹었다\" 주장',
+		'박유천, 황하나와 마약 의혹 \'결별 후에도 집 드나들어\'',
+		'경찰, 박유천 압수수색…마약투약 혐의',
+		'경찰 \"박유천 체모 대부분 제모…증거인멸 의도 가능성↑\" [종합]'
+	];
+
+window.onload = function () {
+	/* yMax, yMin : y축 긍정부정수치 범위 지정 */
+var yMax = 100;
+var yMin = -100;
+
+var spread_num = [905,723,443];
+var change_num = [200,300,400];
+var emotion_num = [363,104,222];
+var news_title = ["뉴스타이틀1", "뉴스타이틀2", "뉴스타이틀3"];
+
+var dps = [];
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	exportEnabled: true,
+	title :{
+		//text: "키워드감정추이그래프"
+	},
+	// x축
+	axisX: {
+		valueFormatString: "YY.MM.DD"
+		//title: "타임라인"
+	}, 
+	// y축
+	axisY: {
+ 		maximum: yMax,
+ 		minimum: yMin,
+		//title: "호감도",
+		suffix: " 점",
+		//suffix : " ",
+		stripLines: [{
+			value: (keyword_favority[0]+keyword_favority[1]+keyword_favority[2]+keyword_favority[3]+keyword_favority[4]+keyword_favority[5]+keyword_favority[6]+keyword_favority[7]+keyword_favority[8]+keyword_favority[9]+keyword_favority[10]+keyword_favority[11]+keyword_favority[12]+keyword_favority[13])/14,
+			label: "평균"
+		}],
+		includeZero: false
+	},
+	data: [{
+		type: "spline",
+		name: "호감도",
+		
+		// 기존 예시 그래프
+// 		toolTipContent: "Top 1. : "+ news_title[0] + "<hr/>"+"확산지수: " + spread_num[0] + " / "+ "변화지수: " + change_num[0] + " / " + "감정지수: " + emotion_num[0] + " / " + "지수설명"
+// 		                + "<hr/>" + "Top 2. : " + news_title[1] + "<hr/>"+"확산지수: " + spread_num[0] + " / "+ "변화지수: " + change_num[0] + " / " + "감정지수: " + emotion_num[0] + " / " + "지수설명"
+// 		                + "<hr/>" + "Top 3. : " + news_title[2] + "<hr/>"+"확산지수: " + spread_num[0] + " / "+ "변화지수: " + change_num[0] + " / " + "감정지수: " + emotion_num[0] + " / " + "지수설명"
+// 		                + "<hr/>"
+// 		, 
+// 		toolTipContent: "Top 1. : "+ newsTitle_ex1[0] + "<hr/>"+"확산지수: " + news_ex1_spread_num[0] + " / "+ "변화지수: " + news_ex1_change_num[0] + " / " + "감정지수: " + news_ex1_emotion_num[0] + " / " + "지수설명"
+//         + "<hr/>" + "Top 2. : " + newsTitle_ex2[0]
+// 		+ "<hr/>" + "Top 3. : " + news_title[2] 
+//         + "<hr/>"
+// , 
+		
+		
+		
+//		xValueFormatString: "####",
+//		yValueFormatString: "####",
+//		markerSize: 0,
+//		dataPoints: dps 
+		
+//		type: "line",
+		markerSize: 12,
+		xValueFormatString: "YYYY"+"년 " + "MM" + "/" + "DD",
+		yValueFormatString: "$###.#",
+		
+		// 툴팁 참고 : https://canvasjs.com/docs/charts/chart-options/data/datapoints/tooltipcontent/
+		dataPoints: [        
+			{ x: new Date(2019, 03, 3), y: keyword_favority[0], indexLabel: "상승", markerType: "triangle",  markerColor: "#6B8E23", 
+toolTipContent: 
+   
+   "<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[0] + "<br/><br/>" 
+   + "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[0] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[0] + " / "+ "변화지수: " + news_ex1_change_num[0] + " / " + "감정지수: " + news_ex1_emotion_num[0]
+   +"</strong></p><hr/>" 
+   + "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[0] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[0] + " / "+ "변화지수: " + news_ex2_change_num[0] + " / " + "감정지수: " + news_ex2_emotion_num[0]
+   +"</strong></p><hr/>" 
+   + "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[0] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[0] + " / "+ "변화지수: " + news_ex3_change_num[0] + " / " + "감정지수: " + news_ex3_emotion_num[0]
+   +"</strong></p><hr/>" 		   
+			},
+			{ x: new Date(2019, 03, 4), y: keyword_favority[1], indexLabel: "하락", markerType: "cross",  markerColor: "tomato", 
+toolTipContent: 
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[1] + "<br/><br/>" 
+	 + "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[1] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[1] + " / "+ "변화지수: " + news_ex1_change_num[1] + " / " + "감정지수: " + news_ex1_emotion_num[1]
+	 +"</strong></p><hr/>" 
+	 + "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[1] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[1] + " / "+ "변화지수: " + news_ex2_change_num[1] + " / " + "감정지수: " + news_ex2_emotion_num[1]
+	 +"</strong></p><hr/>" 
+	 + "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[1] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[1] + " / "+ "변화지수: " + news_ex3_change_num[1] + " / " + "감정지수: " + news_ex3_emotion_num[1]
+	 +"</strong></p><hr/>" 	
+		},
+			{ x: new Date(2019, 03, 5) , y: keyword_favority[2], indexLabel: "정체", markerType: "square", markerColor: "#0000FF" , 
+toolTipContent: 
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[2] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[2] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[2] + " / "+ "변화지수: " + news_ex1_change_num[2] + " / " + "감정지수: " + news_ex1_emotion_num[2]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[2] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[2] + " / "+ "변화지수: " + news_ex2_change_num[2] + " / " + "감정지수: " + news_ex2_emotion_num[2]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[2] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[2] + " / "+ "변화지수: " + news_ex3_change_num[2] + " / " + "감정지수: " + news_ex3_emotion_num[2]
+	+"</strong></p><hr/>" 	
+
+		},
+			{ x: new Date(2019, 03, 6) , y: keyword_favority[3], indexLabel: "정체", markerType: "square", markerColor: "#0000FF" ,
+toolTipContent:
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[3] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[3] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[3] + " / "+ "변화지수: " + news_ex1_change_num[3] + " / " + "감정지수: " + news_ex1_emotion_num[3]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[3] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[3] + " / "+ "변화지수: " + news_ex2_change_num[3] + " / " + "감정지수: " + news_ex2_emotion_num[3]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[3] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[3] + " / "+ "변화지수: " + news_ex3_change_num[3] + " / " + "감정지수: " + news_ex3_emotion_num[3]
+	+"</strong></p><hr/>" 		
+
+		},
+			{ x: new Date(2019, 03, 7) , y: keyword_favority[4], indexLabel: "정체", markerType: "square", markerColor: "#0000FF" , 
+toolTipContent: 
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[4] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[4] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[4] + " / "+ "변화지수: " + news_ex1_change_num[4] + " / " + "감정지수: " + news_ex1_emotion_num[4]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[4] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[4] + " / "+ "변화지수: " + news_ex2_change_num[4] + " / " + "감정지수: " + news_ex2_emotion_num[4]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[4] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[4] + " / "+ "변화지수: " + news_ex3_change_num[4] + " / " + "감정지수: " + news_ex3_emotion_num[4]
+	+"</strong></p><hr/>" 	
+		},
+			{ x: new Date(2019, 03, 8) , y: keyword_favority[5], indexLabel: "정체", markerType: "square", markerColor: "#0000FF" , 
+toolTipContent:
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[5] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[5] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[5] + " / "+ "변화지수: " + news_ex1_change_num[5] + " / " + "감정지수: " + news_ex1_emotion_num[5]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[5] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[5] + " / "+ "변화지수: " + news_ex2_change_num[5] + " / " + "감정지수: " + news_ex2_emotion_num[5]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[5] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[5] + " / "+ "변화지수: " + news_ex3_change_num[5] + " / " + "감정지수: " + news_ex3_emotion_num[5]
+	+"</strong></p><hr/>" 
+		},
+			{ x: new Date(2019, 03, 9) , y: keyword_favority[6], indexLabel: "하락", markerType: "cross", markerColor: "tomato" , 
+toolTipContent:
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[6] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[6] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[6] + " / "+ "변화지수: " + news_ex1_change_num[6] + " / " + "감정지수: " + news_ex1_emotion_num[6]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[6] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[6] + " / "+ "변화지수: " + news_ex2_change_num[6] + " / " + "감정지수: " + news_ex2_emotion_num[6]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[6] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[6] + " / "+ "변화지수: " + news_ex3_change_num[6] + " / " + "감정지수: " + news_ex3_emotion_num[6]
+	+"</strong></p><hr/>" 
+		},
+			{ x: new Date(2019, 03, 10) , y: keyword_favority[7], indexLabel: "상승", markerType: "triangle", markerColor: "#6B8E23" , 
+toolTipContent:
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[7] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[7] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[7] + " / "+ "변화지수: " + news_ex1_change_num[7] + " / " + "감정지수: " + news_ex1_emotion_num[7]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[7] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[7] + " / "+ "변화지수: " + news_ex2_change_num[7] + " / " + "감정지수: " + news_ex2_emotion_num[7]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[7] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[7] + " / "+ "변화지수: " + news_ex3_change_num[7] + " / " + "감정지수: " + news_ex3_emotion_num[7]
+	+"</strong></p><hr/>" 
+		},
+			{ x: new Date(2019, 03, 11) , y: keyword_favority[8], indexLabel: "하락", markerType: "cross", markerColor: "tomato" , 
+toolTipContent:
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[8] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[8] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[8] + " / "+ "변화지수: " + news_ex1_change_num[8] + " / " + "감정지수: " + news_ex1_emotion_num[8]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[8] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[8] + " / "+ "변화지수: " + news_ex2_change_num[8] + " / " + "감정지수: " + news_ex2_emotion_num[8]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[8] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[8] + " / "+ "변화지수: " + news_ex3_change_num[8] + " / " + "감정지수: " + news_ex3_emotion_num[8]
+	+"</strong></p><hr/>" 
+		},
+			{ x: new Date(2019, 03, 12) , y: keyword_favority[9], indexLabel: "상승", markerType: "triangle", markerColor: "#6B8E23" , 
+toolTipContent:
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[9] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[9] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[9] + " / "+ "변화지수: " + news_ex1_change_num[9] + " / " + "감정지수: " + news_ex1_emotion_num[9]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[9] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[9] + " / "+ "변화지수: " + news_ex2_change_num[9] + " / " + "감정지수: " + news_ex2_emotion_num[9]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[9] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[9] + " / "+ "변화지수: " + news_ex3_change_num[9] + " / " + "감정지수: " + news_ex3_emotion_num[9]
+	+"</strong></p><hr/>" 
+		},
+			{ x: new Date(2019, 03, 13) , y: keyword_favority[10], indexLabel: "하락", markerType: "cross", markerColor: "tomato" , 
+toolTipContent:
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[10] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[10] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[10] + " / "+ "변화지수: " + news_ex1_change_num[10] + " / " + "감정지수: " + news_ex1_emotion_num[10]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[10] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[10] + " / "+ "변화지수: " + news_ex2_change_num[10] + " / " + "감정지수: " + news_ex2_emotion_num[10]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[10] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[10] + " / "+ "변화지수: " + news_ex3_change_num[10] + " / " + "감정지수: " + news_ex3_emotion_num[10]
+	+"</strong></p><hr/>" 
+		},
+			{ x: new Date(2019, 03, 14) , y: keyword_favority[11], indexLabel: "하락", markerType: "cross", markerColor: "tomato", 
+toolTipContent: 
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[11] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[11] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[11] + " / "+ "변화지수: " + news_ex1_change_num[11] + " / " + "감정지수: " + news_ex1_emotion_num[11]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[11] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[11] + " / "+ "변화지수: " + news_ex2_change_num[11] + " / " + "감정지수: " + news_ex2_emotion_num[11]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[11] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[11] + " / "+ "변화지수: " + news_ex3_change_num[11] + " / " + "감정지수: " + news_ex3_emotion_num[11]
+	+"</strong></p><hr/>" 
+		}		,	
+			{ x: new Date(2019, 03, 15) , y: keyword_favority[12], indexLabel: "하락", markerType: "cross", markerColor: "tomato", 
+toolTipContent:
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[12] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[12] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[12] + " / "+ "변화지수: " + news_ex1_change_num[12] + " / " + "감정지수: " + news_ex1_emotion_num[12]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[12] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[12] + " / "+ "변화지수: " + news_ex2_change_num[12] + " / " + "감정지수: " + news_ex2_emotion_num[12]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[12] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[12] + " / "+ "변화지수: " + news_ex3_change_num[12] + " / " + "감정지수: " + news_ex3_emotion_num[12]
+	+"</strong></p><hr/>" 
+		}	,
+			{ x: new Date(2019, 03, 16) , y: keyword_favority[13], indexLabel: "하락", markerType: "cross", markerColor: "tomato", 
+toolTipContent:
+	"<p style='\"'font-size:15px; padding-top:10px;'\"'>" + "일자 : " +newsDate[13] + "<br/><br/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 1위 : " + "<strong>" + newsTitle_ex1[13] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex1_spread_num[13] + " / "+ "변화지수: " + news_ex1_change_num[13] + " / " + "감정지수: " + news_ex1_emotion_num[13]
+    +"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 2위 : " + "<strong>" + newsTitle_ex2[13] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex2_spread_num[13] + " / "+ "변화지수: " + news_ex2_change_num[13] + " / " + "감정지수: " + news_ex2_emotion_num[13]
+	+"</strong></p><hr/>" 
+	+ "<p style='\"'font-size:15px;'\"'>" + "주요뉴스 3위 : " + "<strong>" + newsTitle_ex3[13] +"&nbsp;" + "<p style='\"'color: blue;'\"'>"+"&nbsp;&nbsp;&nbsp;&nbsp;" + "[지표] " + "확산지수: " + news_ex3_spread_num[13] + " / "+ "변화지수: " + news_ex3_change_num[13] + " / " + "감정지수: " + news_ex3_emotion_num[13]
+	+"</strong></p><hr/>" 
+		}	
+			]
+	}]
+});
+
+var xVal = 0;
+var yVal = 0;
+var updateInterval = 1000;
+var dataLength = 50; // number of dataPoints visible at any point
+
+var week = new Array('일', '월', '화', '수', '목', '금', '토'); 
+var today = new Date(); 
+var year = today.getFullYear(); 
+var month = today.getMonth() + 1; 
+var day = today.getDate(); 
+var dayName = week[today.getDay()];
+
+var today_date = year + '년 ' + month + '월 ' + day + '일 ' + dayName + '요일'
+
+/* 기준날짜임 */
+var baseDay = new Date(2019, 4, 1);  // 5월 1일
+var ago = new Date(2019,4,1);
+ago.setDate(ago.getDate()-14);
+
+// var updateChart = function (count) {
+// 	count = count || 1;
+	
+// 	for (var j = 0; j < count; j++) {
+// 		yVal = Math.round(Math.random()*(yMax-yMin+1)+yMin);
+// 		dps.push({
+// 			x: xVal,
+// 			y: yVal
+// 		});
+// 		xVal++;
+		
+// 	}
+// 	if (dps.length > dataLength) {
+// 		dps.shift();
+// 	}
+// 	chart.render();
+// };
+chart.render();
+updateChart(dataLength); 
+setInterval(function(){ updateChart() }, updateInterval); 
+}
+
+</script>
+</head>
+<body>
+
+
+<div id="chartContainer" style="width: 80%; height: 300px; padding-top:25px; margin:auto;"></div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script> 
+</body>
+</h"NewsBigMain/templates/chart_line_3.html"tml>

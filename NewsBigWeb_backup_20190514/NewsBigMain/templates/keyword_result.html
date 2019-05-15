@@ -1,0 +1,466 @@
+<!--  할것 : 지수 설명 팝업 구현, 데이터 db화, 메인 그래프 연결 변경, 바 그래프 수정 -->
+<!-- p 태그 속성 배경색 변경 고려 : p style="background-color: -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+    <title>뉴스임팩트</title>
+	<link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.css') }}" />  
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/simple-chart.css') }}" />  
+  
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,600|Lato:300, 400i,700,700i" rel="stylesheet">
+  
+    <script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/simple-chart.js') }}"></script>
+    
+</head>
+ 
+<body>   	
+	<!-- CSS -->
+
+	<style>
+		/* 폰트 - 외부에서 폰트 불러오기 */
+		@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+		@import url(http://fonts.googleapis.com/earlyaccess/hanna.css);
+
+		/* 최상단 메뉴 css 양식 */
+		nav ul{padding-top:20px; padding-bottom:15px;} /* 상단 여백 10px */
+		nav ul li{
+			display:inline; /* 세로나열을 가로나열로 변경 */
+			border-left:1px solid #999; /* 각 메뉴의 왼쪽에 "|" 표시(분류표시) */
+			font:bold 12px Dotum;  /* 폰트 설정  - 12px 의 돋움체 굵은 글씨 */
+			padding:0 10px;  /* 각 메뉴 간격 */
+		}
+		nav ul li:first-child{border-left:none;} /* 메뉴 분류 중 제일 왼쪽의 "|"는 삭제 */
+		
+
+		/* 폰트그룹 - 구글 웹폰트 */
+ 		.ng-font{ 
+ 			font-family:'Nanum Gothic', 돋움; 
+ 		} 
+ 		.w-font{ 
+ 			font-family: 'Hanna', serif; 
+ 		} 
+		h3{
+			font-size:40px; /*글자 크기*/
+		}
+		
+/* 		p{ */
+/* 			font-size:20px; /*글자 크기*/ */
+/* 		} */
+		
+		form {
+ 		 text-align: center;
+		}
+		.green_window {
+			display: inline-block;
+			width: 366px; height: 40px;
+/* 			border: 3px solid #2db400; */
+			border: 3px solid #1b5ac2;
+		    -webkit-border-radius: 4px;
+		    -moz-border-radius: 4px;
+		    
+			background: white;
+		}
+		
+		.input_text {
+			width: 348px; height: 21px;
+			margin: 6px 0 0 9px;
+			border: 0;
+			line-height: 21px;
+			/*font-weight: bold;*/
+			font-size: 19px;
+			outline: none;
+		}
+		.sch_smit {
+			width: 54px; height: 40px;
+			margin: 0; border: 0;
+			vertical-align: top;
+/* 			background: #22B600; */
+			background: #1b5ac2;
+			color: white;
+			font-weight: bold;
+			border-radius: 1px;
+			cursor: pointer;
+		}
+		.sch_smit:hover {
+			background: #56C82C;
+		}
+		
+		.input_text::placeholder{
+			color: #D9E5FF;
+			/*font-weight: bold*/;
+		}
+		
+		.news_headline{
+			font-family: "HY헤드라인","맑은고딕";
+			font-size: 20px;
+			font-weight: bold;
+		}
+		.news_content{
+			font-family: "맑은고딕";
+			font-size: 15px;
+		}
+		.news_date{
+			font-family: "맑은고딕";
+			font-weight: bold;
+			font-size: 15px;
+		}
+		.twit_content{
+			font-family: "HY헤드라인","맑은고딕";
+			font-size: 15px;
+			font-weight: bold;
+		}
+		.twit_keyword{
+			font-family: "HY헤드라인","맑은고딕";
+			font-weight: bold;
+		}
+		
+/* 		.news_numbers_text{ */
+/* 			font-family: "HY헤드라인","맑은고딕"; */
+/* 			font-size: 18px; */
+/* 			font-color: #F361A6; */
+/* 		} */
+	</style>
+	
+
+	<script>
+ 	{% for key, value in result.items() %} 
+	
+ 	var myVariable = {{value | tojson}};
+ 	//document.write('Hi'+myVariable);
+ 
+ 	{% endfor %}
+ 	
+ 	//document.write('Hello' + myVariable);
+ 	
+ 	var newsDate_ex1 = [
+ 		'2019-03-04',
+ 		'2019-03-05',
+ 		'2019-03-06',
+ 		'2019-03-07',
+ 		'2019-03-08',
+ 		'2019-03-09',
+ 		'2019-03-10',
+ 		'2019-03-11',
+ 		'2019-03-12',
+ 		'2019-03-13',
+ 		'2019-03-14',
+ 		'2019-03-15',
+ 		'2019-03-16',
+ 		'2019-03-17',
+ 		'2019-03-18'
+ 	];
+ 	
+ 	// 키워드 - 호감도
+ 	var keyword_favority = [17,-3,5,2 ,-20 ,-26 ,-77 ,-80 ,-36 ,-69 ,-96 ,-71 ,-65 ,-89 ,-75];
+ 	
+ 	// [뉴스] - 확산지수
+ 	var news_ex1_spread_num = [
+ 		72,82,64,68,89,69,89,92,91,71,97,81,85,90,81
+ 	];
+ 	// [뉴스] - 감성지수
+ 	var news_ex1_emotion_num = [
+ 		55,72,69,70,90,67,80,95,92,76,90,75,80,85,77
+ 	];
+ 	// [뉴스] - 변화지수
+ 	var news_ex1_change_num = [
+ 		10,17,-3,1,20,-23,13,15,-3,-16,14,-15,5,5,-8
+ 	];
+ 	
+ 	var twit_ex1_emotion = ['부정','부정','부정','부정','부정','부정', '부정', '부정', '부정', '부정', '부정', '부정',
+ 		'부정','부정','부정'];
+  	var twit_ex1 = [
+  		'RT @macrostar: 역시 저 사건 상당히 스케일 크게 돌아갈 듯... [단독] 권익위 ＇\승리 성접대 의혹\＇ 카카오톡 일체 확보..TF팀 구성해 분석 중 https://t.co/C2ql2fe3NB',
+  		'RT @kes6202: \“승리랑 선 긋더니\”···양현석이 실소유주인 \‘탈세의혹\’ 승리 클럽이 추가로 발견됐다 https://t.co/BMVDbdmYMM @insight_co_kr 님이 공유',
+  		'RT @kimkyochon: YG 홍대에서 클럽 운영 한다는거 다 아는 사실 아니었나...양사장이 한창 홍대 건물들 매입해댈때 홍대에서 양사장 땅 밟지않고는 못지나간다는 말도 있었고...그 클럽을 승리 명의로 해놨었나?',
+  		'RT @sjdefense: 모르는 전화 걸려 와 받지 않았더니 끈질기게 계속 걸려 옴 귀찮아 받아 봤더니 3곳 모두 중앙언론사 기자 용건 뭐냐니까 버닝썬 승리 변호하는 H법무법인 S변호사 전화번호 알려달라그 분과 내가 아는 사이인 걸 어떻게…',
+  		'RT @topstarnews: [공식입장] YG엔터테인먼트 측 \“\‘버닝썬\’ 승리 육군 현역 입대 예정…의경 합격해도 포기\” #버닝썬 #승리',
+  		'\"물의를 일으키고 군대로 도망가서는 안 된다\"며 승리의 입대를 연기시켜 달라는 청원이 게시되는 등 논란이 일고 있습니다. https://t.co/rjN7Q4lpCQ',
+  		'RT @News_Y: [속보] 경찰, 클럽 아레나 압수수색 진행',
+  		'RT @sepeid11: 경찰님들 언제는 성매매 카톡 원본 같은 거 없다느니, 클럽에서 왜 마약을 하겠느냐니, 철거하는 거 몰랐다느니, 전직 경찰 소행으로 꼬리 자르기 노리시더니 총리님 한 말씀 하시니 발등에 불이 떨어지셨어요~?',
+  		'[종합] 승리 \˙성매매 알선\˙ 혐의 입건…경찰 \＂카톡 분석 후 피의자 전환\＂ (출처 : 망고3님의.. | https://t.co/AKy03KgV2N 블로그)',
+  		'RT @yoongaphee: 승리고 정준영이고 쟤들이 죄의식 있을까.',
+  		'RT @yunaboa1: SBS 8시 뉴스에서 새로 공개된 승리 단톡방 https://t.co/mhO9rj0zVI',
+  		'RT @best2671: 외신도 승리·정준영사건 주목 로이터 \'섹스, 거짓말 그리고 비디오\' \"K팝스타는 걸어다니는 시한폭탄\" CNN은 \'K팝 아이돌이 실제로는 얼마나 깨끗한가\'라는 질문을 야기했다',
+  		'RT @L_walkorthink: 승리는 경찰의 휴대폰 제출 요구를 아예 거절했고, 정준영은 2주 전 휴대폰을 교체했다며 새 휴대폰을 제출했다.',
+  		'줄쓰큰들, 버닝썬 게이트 어떻게 생각하는지는 \‘정준영 동영상\’이 인기검색어 1위였던 것만 봐도 너무 투명하다. 승리, 정준영 그 무리들은 줄쓰큰들한테 \‘어쩌다 불쌍하게 걸린 놈들\’일 뿐이고, 거기서 이어진… https://t.co/8ivG2J1Uwg',
+  		'승리·정준영 단톡방 멤버들, 윤 총경 존재 알고 있었다 (출처 : 크러스터6 | https://t.co/lQo1LBmiMP 블로그) https://t.co/mwLRuqDNxx'];
+ 	
+  	var twit_ex1_emotion_keyword
+  	= ['','탈세','','','','물의,도망,논란','압수수색','성매매,마약,꼬리 자르기','성매매,알선,입건,피의자','죄의식, 있을까','','','','','불쌍','']
+  	
+  	var twit_ex2_emotion = ['부정','부정','부정','부정','부정','부정', '부정', '부정', '부정', '부정', '부정', '부정',
+  		'부정','부정','부정'];
+  	var twit_ex2 = [
+  		'RT @goodam91: 경찰 \“국민권익위, \'‘승리 성접대 정황 카톡\’ 확보\” https://t.co/xjpBvS0smr',
+  		'https://t.co/G85k8B5csh 경찰, \'성접대 의혹\' 승리 카톡 파일 확보…\"증거능력 검토\"',
+  		'RT @community_twt: [북] \'탈세 의혹\' 승리 클럽, 홍대에도 있었다..실소유주는 YG 양현석 https://t.co/D0rjs5Wtc7#ruliweb #루리웹',
+  		'RT @sportskh: \‘승리 홍대 클럽\’ 실소우쥬는 양현석…조례 위반에 탈세 의혹까지  ▷자세한 기사는https://t.co/KYHjSqlxEh https://t.co/i8NvIi20nM',
+  		'강력한 용의자 아닌가?조용히 입대? 조용히 토끼고 싶은거지승리 는 국방부  이나고 법무부 로 조용히 불러서 마무리 해라 ~#뭔개지랄 #꼼수https://t.co/76axQbVrTA',
+  		'RT @saprhassa: 승리 그 클럽에 중국애들 마약커넥션이 거하게 얽혀 있다는데 단순히 대만애들만 아니었네. 큰일날 넘이네. 이쯤되면 경찰청장 뭔가 일망타진할 생각해야 하는 거 아니냐. 그리고 국가에서 탈세 해외도피 등등 해서 올해 추징한 액수',
+  		'RT @yonhaptweet: 승리 \'성매매 알선\' 혐의 입건…피의자로 신분 전환(속보) https://t.co/y0eo9eEcqZ',
+  		'RT @dlwoaudrotorl: 승리, 마약혐의 완전히 벗었다…국과수 모발검사 \'최종 음성판정\' 기사 관련 댓글ㄴ약쟁이 아수라 소굴 운영하면서 지는 코에도 안대고ㄴ승리 마약 궁금했던 사람은 경찰뿐이었을듯ㄴ성상납 이중요한거지 그리고 클럽내 마…\"',
+  		'RT @prettydike100: 승리 채팅방이 어떻게 유출됬나 했더니..ㅋㅋㅋ 거기 채팅방에 있던 30대 연예인 남자가 휴대전화 수리 의뢰했는데 거기서 유출되서 제보한거구나.. https://t.co/q19eoBqLZ9',
+  		'RT @poppinbw: 승리나 정준영같은 꼬맹이들 조지는걸로 끝나면 안됨.보아하니 승리가 채홍사 노릇까지 한 모양인데 상납받은 씹새들, 그 옆에서 설렁탕 국물이라도 얻어먹은 개새들까지 싹 다 잡아 족쳐야함.그게 누구건 싹 다.',
+  		'RT @yonhaptweet: \"승리 카톡방, 우리 업소 찔렀는데 경찰청장 걱정말라더라\"(속보) https://t.co/CGdPSt7Tmm',
+  		'RT @operationoxygen: 도데체 얘가 뭔데 이런 대우냐? 전두환 급이냐???유리홀딩스 대표, 승리에 앞서 기습출석.. 경찰 전용 동문으로, 어떻게? | 다음뉴스 https://t.co/B0RpOhecth',
+  		'RT @mma9090: [\‘가수 승리 입영연기\’ 관련 병무청 입장]가수 승리가 입영일자 연기를 신청할 경우, 관련 법령에 따라 연기 여부를 검토하겠습니다.  자세히▶ https://t.co/4eUmShXiii https://t.co/twonDQi…',
+  		'RT @Mountain7737: \‘승리·정준영\’ 사건으로 은근슬쩍 묻히는 국민이 꼭 알아야 할 \‘경제 뉴스\’ 4가지 https://t.co/a4EEWBnWus @insight_co_kr 님이 씀',
+  		'RT @rockjejeya: 190315 승리 카톡방 속 \‘경찰총장\’…靑 민정수석실 거친 핵심인물 https://t.co/bv8kadOXtw 윤규균 총경은 2017년 7월부터 1년 동안 청와대로 파견돼 민정비서관실에서 일했고, 소수 경찰에게만 기회가…'
+  		];
+ 	
+  	var twit_ex2_emotion_keyword
+  	= ['성접대','성접대,의혹','탈세,의혹','위반,의혹','용의자,지랄,꼼수','큰일날,탈세','성매매,입건,피의자','마약,약쟁이','유출','조지는,씹새,개새','업소','','입영연기','묻히는',''];
+  	
+  	
+  	
+  	var newsTitle_ex1 = [
+   		'권익위, 경찰이 없다던 \'승리 성접대 의혹\' 카카오톡 확보',
+  		'경찰, 승리 \'성접대 알선 의혹 카톡\' 확보…재소환하나',
+  		'승리 클럽, 실소유주 \'양현석\' 의혹.. 끝나지 않는 \'버닝썬 게이트\'',
+  		'버닝썬 1억원 \‘만수르 세트\’는 탈세 메뉴…6000만원 이익 남겨', 
+ 		'승리, \'버닝썬 논란\' 속 25일 육군 현역 입대 \<공식입장\>',
+  		'빅뱅 팬들 \"승리 퇴출\" vs \"타 멤버에도 피해\" 갈등',
+ 		'빅뱅 승리 \'성매매 알선\' 혐의 입건…피의자 신분 전환(종합)',
+  		'\‘승리 성접대 카톡\’ 파문에  주가 \‘날개 없는 추락\’',
+  		'★초점 \“민폐도 유분수\”정준영 파문에 \‘1박 2일\’ → \‘현지에서 먹힐까\’ 빨간불', 
+ 		'승리게이트 확산에 엔터株 롤러코스터',
+  		'실시간뉴스 몰카 혐의 정준영·성접대 혐의 승리 오늘 소환', 
+  		'청와대 근무  총경 \‘참고인 신분\’ 조사중…김태우 \“총경 靑 내 실세총경\” 종합 2보', 
+  		'주가 폭락에 뿔난 엔터 주주들 \‘승리\’에 손해배상 청구할 수 있을까',
+		'승리 단속하면 돈 찔러주면 됨 한국법 사랑해 공권력 조롱',
+  		'경찰총장 거론 총경 입건…청와대 근무 때도 골프'
+  	];
+ 	
+  	var newsContents_ex1= [
+  		'[이데일리 정시내 기자] 국민권익위원회가 그룹 빅뱅 승리의 성접대 정황이 담긴 카카오톡 증거물 일체를 확보한 것으로 전해졌다.',
+  		'경찰이 가수 승리의 해외 투자자 성접대 의혹과 관련해 이 내용이 담긴 카카오톡 대화를 확보했습니다. 권익위원회에 제보된 카톡 대화와 같은 것인지, 확인중인 가운데, 공개되지 않은 추가 내용도 확보한 것으로 전해졌습니다. 구민성 기자가 취재했습니다.', 
+  		'빅뱅 승리(29∙본명 이승현)가 직접 운영한다고 알렸던 클럽의 실소유주가 양현석 YG엔터테인먼트 대표라는 의혹이 제기됐다.6일 쿠키뉴스는 승리가 직접 운영한다고 소개했던 홍대 소재 클럽의 탈세 의혹과 더불어 해당 클럽의 실소유주가 양 대표라고 보도했다.보도에 따르면 승리는 지난 2017년 12월부터 지난해 8월까지 홍대 \‘삼거리포차\’ 인근에 위치한 클럽 \‘엑스\’를 운영했다. 엑스는 현재 \‘러브시그널\’로 상호명을 바꿨지만 대표는 동일한 것으로 알려졌다. 해당 클럽의 공문서상 실소유주는 양 대표인것으로 드러났다.',
+  		'SBS funE 4일 보도에 따르면 국민권익위원회는 지난달 22일 승리의 성접대 의혹 내용이 담긴 카카오톡 증거물을 \‘공익신고\’의 형식으로 제출받았다. 권익위가 확보한 자료에는 승리를 포함해 유리홀딩스 대표 유모씨, 또 다른 연예인 등이 등장한다. 이들이 나눈 메시지는 수만 건에 이르는 것으로 알려졌다. 카톡 대화에는 2015년 12월 승리가 성접대를 시도한 정황이 담겨있는 것으로 전해졌다. 권익위는 연예인들이 드나들던 강남 클럽들과 경찰과의 유착 의혹 등 또 다른 정황도 살펴보고 있다. 공익신고자는 \“카카오톡 내용 중 경찰과 유착을 의심할 만한 대화와 정황이 대거 포함되어 있어서 경찰이 아닌 권익위에 제출하게 됐다\”고 말했다. 권익위는 승리의 성접대 의혹뿐 아니라 강남 클럽들과 경찰과의 유착 의혹 등도 함께 조사하고 있는 것으로 알려졌다. 권익위 내부 검토 후 검찰이나 경찰에 수사를 의뢰할 방침이다.',
+  		'서울 유명 클럽 버닝썬이 고가 술세트 판매와 고객들에게 현금 결제를 유도해 탈세를 했다는 의혹이 제기됐다  7일 버닝썬의 오픈일인 지난해 2월 23일부터 5주 동안의 결산 내역서를 공개했다 이 기간 버닝썬 매출은 18억 8000만원 카드 결제가 12억 8000만원 외상을 포함한 현금 항목이 5억여원 이 문서는 버닝썬 전 재무실장 홍모 씨가 작성했다. 이 문서에 탈세 가능 금액을 계산한 표가 있다고 보도했다 바로 현금 미신고 금액 3억 5000만원 부분이다  현금 매출을 과세당국에 제대로 신고하지 않고 3억 5000만원을 누락할 경우 7300만원의 법인세를 780만원까지 줄일 수 있다고 분석했다 . 그룹 빅뱅 승리 타이완 40대 여성 린모 씨 등이 낸 버닝썬 초기 투자금 24억 5000만원을 회수하기 위해 세금 탈루를 시도한 것으로 보인다고 보도했다  또 버닝썬  고객은 카드로 술값을 계산하려고 해도 버닝썬 측이 현금 결제를 유도했다고 말했다  전체 지분 가운데 승리의 우호지분이 50를 차지한다 따라서 버닝썬 관련 문건들이 승리에게도 보고됐을 가능성이 크다  현재 경찰과 세무당국은 승리가 버닝썬 세금 탈루 시도에 개입했는지를 조사하고 있다',
+  		'강남 클럽 버닝썬 실소유주∙\'해외 투자자 성접대\'∙마약 유통 등 각종 의혹에 휩싸인 그룹 빅뱅의 승리(29·이승현)가 논란 속 육군 현역으로 입대한다.승리의 소속사 YG 엔터테인먼트는 8일 공식입장을 통해 \"승리는 3월 25일 육군 현역 입대 예정\"이라고 밝혔다.이날 승리가 서울지방경찰청 의무경찰 선발 시험에 운전병 특기자로 응시한 사실이 알려진 데 대해서는 결과와 상관없이 포기했다고 전했다.최근 사회적 논란의 중심에 서며 부정적인 정서를 감안해 의경 복무를 포기하고 육군에 입대하는 것으로 풀이된다.한편 승리는 지난달 27일 경찰에 출석해 \'성접대\' 의혹을 비롯한 실제 버닝썬 경영에 관여 여부, 버닝썬 마약류 유통 등 불법 행위 등과 관련해 밤샘 조사를 받은 바 있다.이날 승리는 마약 투약 여부를 확인하는 소변 및 모발 검사도 받기도 했다.하지만 그는 성접대와 마약 투약 등 본인을 둘러싼 모든 의혹들을 전면 부인했다.',
+  		'[서울경제] \“개인 사업에 빅뱅 이름을 악용하고 큰 물의를 일으켜 그룹에 끼친 폐해는 회복이 불가능하다. YG에 승리의 퇴출을 촉구한다\”아이돌그룹 빅뱅 멤버 승리(본명 이승현·29)에 대한 팬들의 보이콧 운동이 벌어지고 있다.빅뱅 팬들은 9일 인터넷 커뮤니티 디시인사이드 빅뱅 갤러리에 \‘YG엔터테인먼트에 승리의 퇴출을 촉구한다\’는 성명서를 올렸다. 최근 \‘해외 투자자 성접대\’ 의혹 등이 불거진 승리에 뿔난 빅뱅 팬들이 단체 행동에 나선 것이다. 이들은 \“엄청난 사회적 파장을 일으킨 \‘버닝썬\’ 사건에 연루돼 팀과 소속사 이미지를 심각하게 실추시키고, 개인 사업에 빅뱅 이름을 악용한 승리의 퇴출을 강력히 요구한다\”고 강조했다. 이어 “위법 여부는 수사가 진행돼야 밝혀지겠지만, 큰 물의를 일으켜 그룹에 끼친 폐해는 회복이 불가능하다\”며 \“빅뱅 갤러리는 3월 9일 자로 승리에 대한 지지를 철회할 것\”이라고 주장했다',
+  		'(서울=연합뉴스) 김기훈 기자 = \'해외 투자자 성접대\' 의혹이 불거진 빅뱅 멤버 승리(본명 이승현·29)가 경찰에 정식 입건됐다. 승리는 피내사자가 아닌 피의자 신분으로 조사를 받게 됐다.10일 경찰에 따르면 서울지방경찰청 광역수사대는 최근 성매매알선 등 행위의 처벌에 관한 법률 위반 혐의로 승리를 입건했다.경찰 관계자는 \"(승리와 관련한) 의혹 해소 차원에서 압수수색 영장을 받기 위해 승리를 피의자로 입건했다\"고 설명했다.',
+  		'\‘성접대 의혹\’으로 그룹 빅뱅 멤버 승리본명 이승현·29가 경찰에 정식 입건되면서 소속사인 엔터테인먼트도 직격탄을 맞고 있다  11일 한국거래소에 따르면 이날 오후 2시 현재  주가는 전날보다 15 가량 급락해 장중 3만7000원선이 무너졌다.',
+  		'정준영이 출연 중이던 프로그램에 때아닌 \‘재앙\’을 선사했다정준영은 지난 11일 방송된 \‘8뉴스\’에서 빅뱅 승리 등 다수의 연예인들이 포함된 카카오톡 채팅방에서 정준영이 불법 촬영 영상을 유포했다는 보도가 전해지며 성범죄 의혹에 휩싸였다해당 보도에 따르면 2015년 말부터 정준영이 촬영한 몰카 영상 피해 여성은 10명 특히 정준영은 성범죄를 저지르고도 죄책감을 느끼지 않고 여성을 물건으로 취급한 것으로 알려져 충격은 더욱 커졌다 실제 카카오톡 대화를 토대로 복원한 내용 속에서는 정준영이 연예인 동료들에게 한 여성과 성관계를 했다고 자랑을 한 뒤 몰래 촬영한 영상을 전송한 흔적을 찾아볼 수 있었다',
+  		' 국내 대형 엔터테인먼트사들이 이달 들어 승리 스캔들 이슈에 주가가 울고 웃는 롤러코스터 장세를 보였다 13일 엔터테인먼트 종가는 전 거래일 대비 515 오른 3만7750원에 거래를 마쳤다 앞서 가수 빅뱅 멤버 승리의 버닝썬과 관련된 사건이 성접대 스캔들로까지 번지면서 엔터테인먼트 주가에 큰 타격을 미쳤다',
+  		' ■ 성관계 동영상 불법 촬영과 유포 혐의를 받는 정준영 씨와 성 접대 의혹이 불거진 승리가 오늘 경찰에 소환됩니다 정 씨는 오전에 승리는 오후에 각각 서울지방경찰청 광역수사대에 나와 조사를 받을 예정입니다■ 승리 정준영과 함께 카카오톡 대화방에 있었던 아일랜드 최종훈 씨가 음주운전에 적발된 뒤 보도를 막아달라고 경찰에 부탁한 정황이 드러났습니다 대화방에서는 또 경찰 고위직과 유착 의혹까지 제기돼 경찰이 수사에 나섰습니다',
+  		' \“승리 하나 때문에 손해가 막심합니다 주주들이 단합해 승리에게 손해배상을 청구해야 합니다\”엔터테인먼트 주주 씨가수 승리29ㆍ본명 이승현의 성 접대 의혹이 불거진 \‘버닝썬 사태\’ 여파로 승리의 소속사였던 엔터테인먼트이하 엔터 주가가 날개 없이 추락하고 있다',
+  		'이데일리 정시내 기자 빅뱅 전 멤버 승리와 정준영 아일랜드 최종훈이 탈법과 불법을 저질렀을 것으로 의심되는 정황이 포착됐다16일 방송된  뉴스9에서는 승리·가수 정준영·아일랜드 전 멤버 최종훈 세 사람이 주점 ‘밀땅포차’ 개업을 준비하던 지난 2016년 3월 단체 채팅방 대화 내용을 보도했다 보도에 따르면 또 다른 동업자 박 모 씨는 승리에게 다른 업종으로 신고한 뒤 영업해도 \“불법이지만 법으로 제재하기 애매해서 다들 그냥 쉬쉬한다\”라고 말했다 유흥주점으로 신고하는 대신 일반 음식점으로 신고해 탈세를 모의한 것이다 이에 승리는 \“우리도 별문제 없다는 소리네 구청 등에서 단속이 나오면 돈 좀 찔러주면 된다\”고 답했다',
+  		'경찰이 가수 승리의 단체대화방속 경찰총장으로 지목된 윤 모 총경을 공무상 비밀누설 혐의로 입건했습니다 서울지방경찰청은 윤 총경이 서울 강남경찰서에서 근무하던 지난 2016년 승리와 유리홀딩스 대표 유 모 씨가 공동 설립한 술집의 식품위생법 위반 사건을 은밀히 알아보려한 정황을 포착했습니다 윤 총경은 청와대 근무 시절인 2017년과 지난해에도 유 모 씨 승리 등과 식사와 골프를 친 것으로 조사됐습니다 국민권익위로부터 버닝썬 사건을 넘겨받은 서울중앙지검은 형사3부에 배당했습니다.'
+  	];
+ 	</script>
+ 	
+	
+	<!-- 본문 -->
+	<div class="container">
+   		<div class="header">
+            <!-- 최상단 메뉴 : 홈, 회원가입, 로그인     -->
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="active"><a href="#">홈</a>
+                    </li>
+                    <li role="presentation"><a href="#">회원가입</a>
+                    </li>
+                    <li role="presentation"><a href="showSignUp">로그인</a>
+                    </li>
+                </ul>
+            </nav>
+	             <h3 class="w-font">News Impact(뉴스 임팩트)</h3>
+	             <p class="ng-font" style="font-size:20px">뉴스의 여론 영향력 / 감정 추이 분석 </p> 
+		</div>
+
+  	<!-- 구분선 -->
+	<hr width=”90%” color=”#BDBDBD” noshade />
+	
+	<!-- 키워드 검색 시 메인(중앙) -->
+	<!-- opacity : 외부 div 에 투명도 지정시 내부 모든 것들이 투명도 같이 적용  filter:alpha(opacity:"60")
+	     rgba : 반투명 배경 깔고 그 위에 올리면 편함   rgba(0, 0, 0, 0.6); -->
+	<div class ="body" style="background:#000000;  rgba(0, 0, 0, 0.6);">		
+		<!-- 왼쪽 : 연관기사 -->
+		<div align="left" id='box-left' style="border:1px solid gray; height:auto; float:left; width:40%; 
+		border-radius:1em; margin-right: 10px; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; 
+		padding-left: 10px;">
+		<div align="center" style="border:1px ; ">
+			<p class="w-font" style="padding-top:20px; text-align:center; display:inline-block;"><font size = 6px; color="#FF0080">
+			<script>
+		  		document.write(myVariable + "&nbsp;&nbsp;");
+		  	</script>
+		  	</font>	
+		  	<p class="w-font" style="display:inline-block;"><font size = 6px; color="#4374D9">	
+		  		 연관 뉴스	
+			</font></p>
+		</div>
+		
+	  		<p class="w-font" align = "center" style="border:2px dashed pink; 
+	  		margin-top:20px; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; 
+		padding-left: 10px;"><font size="4.5px" color="#171211">
+			<script>
+				document.write("뉴스 확산지수 : " + news_ex1_spread_num[7] + "&nbsp;&nbsp;&nbsp;&nbsp;" 
+				+ "감성지수 : " + news_ex1_emotion_num[7] +"&nbsp;&nbsp;&nbsp;&nbsp;"+ "변화지수 : " + news_ex1_change_num[7]);
+			</script>
+		</p>
+		
+		<hr width=”90%” color=”#4641D9” noshade />
+		<p class="news_headline" style="padding-top:20px; display:inline-block;"><font color="#171211">
+		
+			<!-- 뉴스 타이틀 -->
+			<script>
+		  		document.write(newsTitle_ex1[7]);
+		  	</script>
+		 </font>	
+		</p>
+		<p class="news_content" style="padding-top:5px">
+			<script>
+				document.write("&nbsp;&nbsp;" + "뉴스발행일자 : " + newsDate_ex1[7]);
+			</script>
+		</p>
+		
+		<hr width=”90%” color=”#EAEAEA” noshade />
+		<p class="news_content" style="padding-top:20px; display:inline-block;"><font color="#171211">
+			<!-- 뉴스 내용 -->
+			<script>
+		  		document.write(newsContents_ex1[7]);
+		  	</script>
+		 </font>	
+		</p>
+		
+		</div>
+		<!-- 가운데 : 키워드 연관단어 TOP5 -->	
+		<div align="center" id='box-center' style="border:1px solid gray; 
+		 padding-top: 10px; 
+		float:left; height:auto; width:30%; border-radius:1em;">
+		<!-- style="border: 1px solid #48BAE4; height: 100px;" --> 
+			<p class="w-font" style="padding-top:20px; display:inline-block;"><font size = 6px; color="#FF0080">   
+				<script>
+	  			document.write(myVariable + "&nbsp;&nbsp;");
+	  			</script>
+	  		</font>	
+	  		<p class="w-font" style="display:inline-block;"><font size = 6px; color="#4374D9">	   <!-- #4374D9 : 연한파랑 -->
+	  		 연관키워드	
+			</font></p>
+	 		<section>
+	  			<p class="w-font" align = "center" style="padding-top:20px;"><font size = 4px; color="#171211">
+<!-- 	  			<script> -->
+<!--   	  			document.write(myVariable); -->
+<!-- 	  			</script> -->
+	 			<img src="{{ url_for('static', filename='img/twit.png')}}" width="40" height="40">
+	  			트위터 TOP 5</font></p>
+	 			<iframe name = "myIframe" class="main-graph" src="http://127.0.0.1:5000/chart_bar"
+	 			scrolling="no" frameborder="0" ></iframe>
+	 			
+	 	 			<p class="w-font" align = "center" style="padding-top:5px;"><font size = 4px; color="#171211">  
+<!--  					<p class="w-font" align = "center";><font size = 4px; color="#4374D9"> -->
+<!-- 	  			<script> -->
+<!--   	  			document.write(myVariable); -->
+<!-- 	  			</script> -->
+	 			<img src="{{ url_for('static', filename='img/신문.png')}}" width="40" height="40" style="margin-right:4px">
+	  			뉴스 TOP 5</font></p>
+	 			<iframe name = "myIframe" class="main-graph" src="http://127.0.0.1:5000/chart_bar_news"
+	 			scrolling="no" frameborder="0" ></iframe>
+	 		</section> 			
+		</div>
+		
+		<!-- 오른쪽 : 트위터 -->
+		<div align="left" id='box-right' style="border:1px solid gray; height:auto; float:left; width:28%; 
+		border-radius:1em; margin-left: 10px; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; 
+		padding-left: 10px;">
+			<div align="center" style="border:1px ; ">
+				<p class="w-font" style="padding-top:20px; text-align:center; display:inline-block;"><font size = 6px; color="#FF0080">
+				<script>
+			  		document.write(myVariable + "&nbsp;&nbsp;");
+			  	</script>
+			  	</font>	
+			  	<p class="w-font" style="display:inline-block;"><font size = 6px; color="#4374D9">	
+			  		 트위터 반응	
+				</font></p>
+			</div>
+			
+			<div align="center">
+				  <hr width=”90%” color=”#E6E6E6” noshade />
+				<div align="left" style="padding-left:10px; display:inline-block;">
+				<div align="left"  style= "display:inline-block; height:auto; float:left; width:20%;">
+	  			<p class="news_headline" align = "center" style="border:2px solid black;"><font size="5px" color="#171211">
+					<script>
+						<!-- 트위터 감성분석결과값 - 호감도(긍정/부정) -->
+						document.write(twit_ex1_emotion[7]);
+					</script>
+				</font></p>
+				</div>
+				
+				<div align="left"  style= "padding-left:7px; display:inline-block; height:auto; float:left; width:80%;">
+	  			<p class="twit_keyword" align = "center" style="border:2px solid black;"><font size="2px" color="#171211">
+					<script>
+						<!-- 트위터 감성분석결과값 - 호감도(긍정/부정) -->
+						document.write(twit_ex1_emotion[7] + "키워드:" + twit_ex1_emotion_keyword[7]);
+					</script>
+				</font></p>
+				</div>
+				
+				
+				<p class="twit_content" style="padding-top:8px; display:inline-block;"><font color="#171211">
+				
+					<!-- 트위터 타이틀 -->
+					<script>
+				  		document.write(twit_ex1[7]);
+				  	</script>
+				 </font>	
+				</p>
+				</div>
+				
+				
+				<hr width=”90%” color=”#EAEAEA” noshade />
+				<div align="left" style="padding-left:10px; display:inline-block;">
+				<div align="left"  style= "display:inline-block; height:auto; float:left; width:20%;">
+					<p class="news_headline" align = "center" style="border:2px solid black;"><font size="5px" color="#171211">
+					<script>
+						<!-- 트위터 감성분석결과값 - 호감도(긍정/부정) -->
+						document.write(twit_ex2_emotion[7]);
+					</script>
+				</font></p>
+				</div>
+				
+				<div align="left"  style= "padding-left:7px; display:inline-block; height:auto; float:left; width:80%;">
+	  			<p class="twit_keyword" align = "center" style="border:2px solid black;"><font size="2px" color="#171211">
+					<script>
+						<!-- 트위터 감성분석결과값 - 호감도(긍정/부정) -->
+						document.write(twit_ex2_emotion[7] + "키워드:" + twit_ex2_emotion_keyword[7]);
+					</script>
+				</font></p>
+				</div>
+				
+				
+				<p class="twit_content" style="padding-top:8px; display:inline-block;"><font color="#171211">
+					<!-- 트위터 타이틀 -->
+					<script>
+				  		document.write(twit_ex2[7]);
+				  	</script>
+				 </font>	
+				</p>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	<!-- body contents 가변길이일 경우 footer 하단 고정 :  https://blackk.tistory.com/85 [개발자 보물창고] -->
+	<footer class="footer" style="position:absolute; right:0px; bottom:0px;">
+        <p style="font-size:12px">&copy; 퇴근후강남역 2019 &nbsp;&nbsp;&nbsp; </p>
+    </footer>
+	
+	
+	
+</div>
+
+<!-- 	<p> 표시	 -->
+<!-- 	 	{% for key, value in result.items() %}  -->
+
+<!--  	{{key}}  -->
+<!--  	{{value}} -->
+<!--  	{% endfor %} -->
+<!-- 	 </p> -->
+	
+</body> 
+</html>

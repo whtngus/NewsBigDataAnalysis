@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+    <title>뉴스임팩트</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.css') }}" />  
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/simple-chart.css') }}" />  
+  
+  
+    <script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/simple-chart.js') }}"></script>
+    
+    
+</head>
+ 
+<body>
+	<!-- CSS -->
+	<style>
+		/* 폰트 - 외부에서 폰트 불러오기 */
+		
+		@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+		@import url(http://fonts.googleapis.com/earlyaccess/hanna.css);
+		
+/* 		@font-face {font-family:'Nanum Gothic'; src:url('/static/fonts/NanumGothic.eot')}; */
+/* 		@font-face {font-family:'Nanum Gothic'; src:url('/static/fonts/NanumGothic.woff')}; */
+		
+		/* 최상단 메뉴 css 양식 */
+		nav ul{padding-top:20px; padding-bottom:15px;} /* 상단 여백 10px */
+		nav ul li{
+			display:inline; /* 세로나열을 가로나열로 변경 */
+			border-left:1px solid #999; /* 각 메뉴의 왼쪽에 "|" 표시(분류표시) */
+			font:bold 12px Dotum;  /* 폰트 설정  - 12px 의 돋움체 굵은 글씨 */
+			padding:0 10px;  /* 각 메뉴 간격 */
+		}
+		nav ul li:first-child{border-left:none;} /* 메뉴 분류 중 제일 왼쪽의 "|"는 삭제 */
+		
+
+		/* 폰트그룹 - 구글 웹폰트 */
+ 		.ng-font{ 
+ 			font-family:'Nanum Gothic', 돋움; 
+ 		} 
+ 		.w-font{ 
+ 			font-family: 'Hanna', serif; 
+ 		} 
+		h3{
+			font-size:40px; /*글자 크기*/
+		}
+		p{
+			font-size:20px; /*글자 크기*/
+		}
+		form {
+ 		 text-align: center;
+		}
+		.green_window {
+			display: inline-block;
+			width: 366px; height: 40px;
+/* 			border: 3px solid #2db400; */
+			border: 3px solid #1b5ac2;
+		    -webkit-border-radius: 4px;
+		    -moz-border-radius: 4px;
+		    
+			background: white;
+		}
+		.input_text {
+			width: 348px; height: 21px;
+			margin: 6px 0 0 9px;
+			border: 0;
+			line-height: 21px;
+			/*font-weight: bold;*/
+			font-size: 19px;
+			outline: none;
+		}
+		.sch_smit {
+			width: 54px; height: 40px;
+			margin: 0; border: 0;
+			vertical-align: top;
+/* 			background: #22B600; */
+			background: #1b5ac2;
+			color: white;
+			font-weight: bold;
+			border-radius: 1px;
+			cursor: pointer;
+		}
+		.sch_smit:hover {
+			background: #56C82C;
+		}
+		
+		.input_text::placeholder{
+			color: #D9E5FF;
+			/*font-weight: bold*/;
+		}
+	</style>
+	
+	<!-- 본문 -->
+    <div class="container">
+        <div class="header">
+
+            <!-- 최상단 메뉴 : 홈, 회원가입, 로그인     -->
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="active"><a href="#">홈</a>
+                    </li>
+                    <li role="presentation"><a href="#">회원가입</a>
+                    </li>
+                    <li role="presentation"><a href="showSignUp">로그인</a>
+                    </li>
+                </ul>
+            </nav>
+	             <h3 class="w-font">News Impact(뉴스 임팩트)</h3>
+
+	             <p class="ng-font"> 뉴스의 여론 영향력 / 감정 추이 분석 </p> 
+        </div>
+
+  	<!-- 구분선 -->
+	<hr width=”90%” color=”#BDBDBD” noshade />
+
+
+  	<!-- 검색 -->
+    <form class="form-search" action="/result" method="POST" style="padding-top:25px">    
+ 	 	<p class="w-font">키워드 : <span class='green_window'> 
+			<input type="text" name = "searchKeyword" placeholder="검색할 키워드를 입력하세요" id = "searchKeyword" class="input_text" />
+		</span>
+		<button type='submit' class='sch_smit'>검색</button></p>
+ 	</form>
+ 	 	
+ 	<!-- 본문 그래프 부분-->
+	<div style="position:absolute; width:80px; height:40px; top:385px; left:200;"> 	
+	 	<img src="{{ url_for('static', filename='img/긍정.png')}}" width="80" height="40">
+	 </div>
+	 <div style="position:absolute; width:80px; height:40px; top:650px; left:200;"> 	
+	 	<img src="{{ url_for('static', filename='img/부정.png')}}" width="80" height="40" >
+	</div>	
+ 	<section>
+ 	
+  		<p class="w-font" align = "center" style="padding-top:20px;"><font size=27px; color="#4374D9">키워드 감정추이 그래프</font></p>
+ 		<!-- <p align="center" style=padding-top:7px;"><font size=3px; color="#4374D9">약 2주간의 감정추이를 보여줍니다.</font></p> -->
+ 		<iframe name = "myIframe" class="main-graph" src="http://127.0.0.1:5000/chart_line_3"
+ 		scrolling="no" frameborder="0" frameborder="0" width="1000" height="400" ></iframe>
+ 	</section>
+ 	
+        <footer class="footer">
+            <p style="font-size:12px">&copy; 퇴근후강남역 2019</p>
+        </footer>
+ 
+    </div>
+</body>
+ 
+</html>

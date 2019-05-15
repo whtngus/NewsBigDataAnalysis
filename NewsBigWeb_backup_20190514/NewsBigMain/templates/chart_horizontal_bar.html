@@ -1,0 +1,109 @@
+<!-- 그래프참고  URL : https://www.jquery-az.com/jquery/demo.php?ex=149.0_2  -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8"> 
+	
+	<link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.css') }}" />  
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/simple-chart.css') }}" />  
+  
+   <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,600|Lato:300, 400i,700,700i" rel="stylesheet">
+  
+    <script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/simple-chart.js') }}"></script>
+	
+    <style>
+/*        body { padding:0.2px; background-color:#eaeff5 } */
+        section { float:center; width:100%; padding:10px; margin:0px 0;}
+        
+/*         ; width:100%; padding:10px; margin:0px 0;  background-color:#fff} */
+        
+/*         ; box-shadow:0 1px 10px rgba(0,0,0,.1) } */
+    </style>
+    
+<!--         <div class="sc-wrapper"> -->
+         <section class="sc-section"> 
+            <div class="keyword-bar-chart"></div>
+         </section> 
+
+<!--     </div> -->
+    <script language="javascript">
+
+//      var temp = location.href.split("?");
+//      var keyword = temp[1];
+//      document.write('안녕'+keyword);
+    
+    
+        //        Source: https://stackoverflow.com/questions/10599933/convert-long-number-into-abbreviated-string-in-javascript-with-a-special-shortn
+        function abbreviateNumber(arr) {
+            var newArr = [];
+            $.each(arr, function (index, value) {
+                var newValue = value;
+                if (value >= 1000) {
+                	// 1234 -> 1.2k   1234567-> 1.2m  1234567899 -> 1.2b
+                    var suffixes = [" ", " K", " mil", " bil", " t"];
+                	//var label_tmp = ["정준영", "성매매", "유출", "피의자", "불법"];
+                    var suffixNum = Math.floor(("" + value).length / 3);
+                    var shortValue = '';
+                    for (var precision = 2; precision >= 1; precision--) {
+                        shortValue = parseFloat((suffixNum != 0 ? (value / Math.pow(1000, suffixNum) ) : value).toPrecision(precision));
+                        var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g, '');
+                        if (dotLessShortValue.length <= 2) {
+                            break;
+                        }
+                    }
+                    if (shortValue % 1 != 0)  shortNum = shortValue.toFixed(1);
+                    newValue = shortValue + suffixes[suffixNum];
+                    //newValue = label_tmp[index]  + "&nbsp;&nbsp;" + shortValue + suffixes[suffixNum];
+                    //newValue = label_tmp[index];
+                }
+                newArr[index] = newValue;
+            });
+            return newArr;
+        }
+
+        /* 그래프 */
+        
+        var labels = ["정준영", "성매매", "유출", "피의자", "불법"];
+        var values = [7014, 6045, 5551, 4581, 3504];
+        //var values = [7014544000, 6045745457, 5551040100, 4581140000, 3504510140];
+		var colors = ["#1000ff","#006eff","#00b6ff","#00fff6","#00ff90"]
+        var outputValues = abbreviateNumber(values);
+
+        $('.keyword-bar-chart').simpleChart({
+               title: {
+                   text: '',
+                   align: 'left'
+               },
+            type: 'bar',
+             layout: {
+                // width: '50%',
+                // height: '40%'
+                width: '100%',
+                height: '100%'             
+               
+             },
+            item: {
+                label: labels,
+                value: values,
+                outputValue: outputValues,
+                color: colors,
+                //color: ['#316262'],
+                prefix: '',
+                suffix: '',
+                render: {
+                    margin: 1.6,
+                    size: 'relative'
+                }
+            }
+        });
+    </script>
+
+
+</head>
+<body> 
+
+</body>
+</html>

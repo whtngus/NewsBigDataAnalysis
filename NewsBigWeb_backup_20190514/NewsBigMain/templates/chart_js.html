@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<title>Line Chart</title>
+	<script src="{{ url_for('static', filename='js/chartist.min.js') }}"></script>
+	<link rel="stylesheet" href="{{ url_for('static',filename='css/chartist.css') }}" />
+</head>
+
+<body>
+	<div class="ct-chart ct-perfect-fourth"></div>
+	<script>
+		var data={
+			labels: ['Mon', 'Tue','Wed','Thu','Fri'],
+			series: [[15,1,40,6,10]]
+		};
+		var options={
+				width : 800,
+				height : 600
+		}
+		var myChart = new Chartist.Line('.ct-chart',data,options);
+		</script>
+</body>
+</html>
